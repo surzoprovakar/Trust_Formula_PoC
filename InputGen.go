@@ -45,7 +45,7 @@ func GenerateTrust(fileIn string, fileOut string) {
 	accepted_merge := 0
 	result := ""
 	trust := 0.0
-	alpha := 0.1
+
 	for snl.Scan() {
 
 		var delta int
@@ -66,14 +66,14 @@ func GenerateTrust(fileIn string, fileOut string) {
 		}
 		if total_request == 1 {
 			result = "Yes"
-			trust = ((1 - alpha) * prev_trust) / (alpha * float64(delta))
+			trust = (prev_trust) / float64(delta)
 			accepted_merge++
 		} else {
-			numerator := (1 - alpha) * prev_trust * float64(accepted_merge)
+			numerator := prev_trust * float64(accepted_merge)
 			if time == prev_time {
 				time = prev_time + 1
 			}
-			denominator := float64(delta*(time-prev_time)*total_request) * alpha
+			denominator := float64(delta * (time - prev_time) * total_request)
 
 			bufout.WriteString(fmt.Sprintf("num "+"%.4v", numerator) + " ")
 			bufout.WriteString(fmt.Sprintf("den "+"%.4v", denominator) + " ")
@@ -101,17 +101,4 @@ func GenerateTrust(fileIn string, fileOut string) {
 func main() {
 	WriteDataInFile("counter.txt")
 	GenerateTrust("counter.txt", "trust.txt")
-
-	// alpha := 0.1
-	// prev_trust := 0.5
-	// prev_time := 0.0
-	// time := 1649901344
-	// delta := 11
-	// numerator := (1 - alpha) * prev_trust * (float64(time) - prev_time)
-	// denominator := float64(delta)
-
-	// trust := numerator / denominator
-	// s := fmt.Sprintf("%.4f", trust)
-	// fmt.Println(s)
-
 }
